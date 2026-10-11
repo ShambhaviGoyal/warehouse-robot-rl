@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Watch reinforcement-learning agents learn to run a warehouse robot, live in your browser. Edit the map, tune the agent, and benchmark Q-learning, SARSA, Expected SARSA and Double Q-learning." />
+    <link rel="icon" type="image/png" href="./sprites/robot_down.png" />
+    <title>Warehouse Robot RL Lab</title>
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <img src="./sprites/robot_carrying_right.png" alt="" class="logo" />
+        <div>
+          <h1>Warehouse Robot RL Lab</h1>
+          <p>Watch reinforcement-learning agents learn to pick up and deliver, live in your browser.</p>
+        </div>
+      </div>
+      <label class="theme-pick">
+        <span>Theme</span>
+        <select id="themeSel" aria-label="Theme">
+          <option value="industrial">Industrial</option>
+          <option value="paper">Paper</option>
+        </select>
+      </label>
+      <nav class="tabs" role="tablist" aria-label="Views">
+        <button role="tab" class="tab active" data-tab="live" aria-selected="true">Live training</button>
+        <button role="tab" class="tab" data-tab="bench" aria-selected="false">Benchmark</button>
+        <button role="tab" class="tab" data-tab="about" aria-selected="false">How it works</button>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <!-- Controls -->
+      <aside class="col controls" aria-label="Controls">
+        <section class="card">
+          <h2>Environment</h2>
+          <label class="field">
+            <span>Map</span>
+            <select id="preset"></select>
+          </label>
+          <p class="hint" id="presetBlurb"></p>
+          <label class="field">
+            <span>Grid size <b id="sizeVal"></b></span>
+            <input type="range" id="size" min="4" max="12" step="1" />
+          </label>
+          <label class="field">
+            <span>Episode step limit <b id="maxStepsVal"></b></span>
+            <input type="range" id="maxSteps" min="30" max="400" step="10" />
+          </label>
+          <label class="check">
+            <input type="checkbox" id="stochastic" />
+            <span>Stochastic floor <em>(movement slips)</em></span>
+          </label>
+          <label class="field" id="slipField">
+            <span>Slip chance <b id="slipVal"></b></span>
+            <input type="range" id="slip" min="0" max="40" step="5" />
+          </label>
+        </section>
+
+        <section class="card">
+          <h2>Map editor</h2>
+          <div class="tools" id="tools" role="radiogroup" aria-label="Editor tool">
+            <button class="tool active" data-tool="shelf" role="radio" aria-checked="true">Shelf</button>
+            <button class="tool" data-tool="item" role="radio" aria-checked="false">Item</button>
+            <button class="tool" data-tool="dock" role="radio" aria-checked="false">Dock</button>
+            <button class="tool" data-tool="start" role="radio" aria-checked="false">Start</button>
+          </div>
+          <p class="hint">Click or drag on the map. With the Shelf tool, clicking a shelf removes it. Editing resets the agent.</p>
+          <button class="btn ghost" id="clearShelves">Clear all shelves</button>
+        </section>
+
+        <section class="card">
+          <h2>Agent</h2>
+          <label class="field">
+            <span>Algorithm</span>
+            <select id="algo"></select>
+          </label>
+          <p class="hint" id="algoBlurb"></p>
+          <label class="field">
+            <span>Learning rate &alpha; <b id="alphaVal"></b></span>
+            <input type="range" id="alpha" min="0.01" max="1" step="0.01" />
+          </label>
+          <label class="field">
+            <span>Discount &gamma; <b id="gammaVal"></b></span>
+            <input type="range" id="gamma" min="0.5" max="0.999" step="0.001" />
+          </label>
+          <label class="field">
+            <span>Exploration decay <b id="decayVal"></b></span>
+            <input type="range" id="decay" min="0.95" max="0.9995" step="0.0005" />
+          </label>
+          <label class="field">
+            <span>Training episodes <b id="episodesVal"></b></span>
+            <input type="range" id="episodes" min="200" max="10000" step="100" />
+          </label>
+          <label class="field">
+            <span>Speed <b id="speedVal"></b></span>
+            <input type="range" id="speed" min="0" max="7" step="1" />
+          </label>
+          <label class="field">
+            <span>Random seed</span>
+            <input type="number" id="seed" min="0" step="1" />
+          </label>
+        </section>
+      </aside>
+
+      <!-- Stage -->
+      <section class="col stage" aria-label="Warehouse">
+        <div class="stage-bar">
+          <div class="toggles" role="group" aria-label="Overlays">
+            <button class="chip on" id="tHeat" aria-pressed="true">Value heatmap</button>
+            <button class="chip on" id="tPolicy" aria-pressed="true">Policy arrows</button>
+            <button class="chip" id="tOptimal" aria-pressed="false">Optimal path</button>
+          </div>
+          <div class="phase" role="group" aria-label="Which half of the Q-table to show">
+            <button class="seg active" id="phase0" aria-pressed="true">Searching</button>
+            <button class="seg" id="phase1" aria-pressed="false">Carrying</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap"><canvas id="grid" aria-label="Warehouse grid"></canvas></div>
+        <p class="info" id="info" aria-live="polite">Hover a cell to inspect what the agent has learned.</p>
+        <div class="problem" id="problem" role="alert" hidden></div>
+
+        <div class="actions">
+          <button class="btn primary" id="train">Train</button>
+          <button class="btn" id="watch">Watch robot</button>
+          <button class="btn" id="randomStart">Random start</button>
+          <button class="btn ghost" id="reset">Reset agent</button>
+        </div>
+        <p class="status" id="replayStatus" aria-live="polite"></p>
+      </section>
+
+      <!-- Insights -->
+      <aside class="col insights" aria-label="Results">
+        <div id="view-live">
+          <section class="metrics" id="metrics"></section>
+          <section class="card">
+            <h2>Reward per episode</h2>
+            <canvas id="chartReward" class="chart" aria-label="Reward per episode"></canvas>
+            <div class="legend" id="legendReward"></div>
+          </section>
+          <section class="card">
+            <h2>Greedy policy quality</h2>
+            <canvas id="chartQuality" class="chart" aria-label="Success rate and efficiency"></canvas>
+            <div class="legend" id="legendQuality"></div>
+          </section>
+        </div>
+
+        <div id="view-bench" hidden>
+          <section class="card">
+            <h2>Compare all four algorithms</h2>
+            <p class="hint">Trains each algorithm on the current map and settings across several random seeds, then compares them with mean &plusmn; standard deviation bands.</p>
+            <div class="row">
+              <label class="field"><span>Episodes <b id="bEpisodesVal"></b></span><input type="range" id="bEpisodes" min="200" max="6000" step="100" /></label>
+              <label class="field"><span>Seeds <b id="bSeedsVal"></b></span><input type="range" id="bSeeds" min="3" max="20" step="1" /></label>
+            </div>
+            <button class="btn primary" id="runBench">Run benchmark</button>
+            <div class="progress" id="benchProgress" hidden><div id="benchBar"></div></div>
+            <p class="status" id="benchStatus"></p>
+          </section>
+          <section class="card" id="benchResults" hidden>
+            <h2>Learning curves</h2>
+            <canvas id="chartBench" class="chart tall" aria-label="Algorithm comparison"></canvas>
+            <div class="legend" id="legendBench"></div>
+            <div class="table-wrap">
+              <table id="benchTable"></table>
+            </div>
+            <p class="hint" id="benchNote"></p>
+          </section>
+        </div>
+
+        <div id="view-about" hidden>
+          <section class="card prose">
+            <h2>How it works</h2>
+            <p>A robot lives on a grid. It must walk to the <b>item</b>, pick it up, carry it to the <b>dock</b>, and drop it. Shelves block the way.</p>
+            <h3>Rewards</h3>
+            <ul>
+              <li><b>+100</b> for a successful delivery, <b>+25</b> for a pickup</li>
+              <li><b>&minus;1</b> every step, and <b>&minus;20</b> more for bumping a shelf</li>
+              <li>In stochastic mode, movement slips (the robot stays put) with a set chance</li>
+            </ul>
+            <h3>The agents</h3>
+            <p>All four are tabular methods: they keep one number, <i>Q(state, action)</i>, for every cell, carrying-or-not, and move. They differ in how they bootstrap the next value.</p>
+            <ul>
+              <li><b>Q-learning</b> uses the best next action (off-policy).</li>
+              <li><b>SARSA</b> uses the next action actually taken (on-policy).</li>
+              <li><b>Expected SARSA</b> averages over the policy&rsquo;s action probabilities.</li>
+              <li><b>Double Q-learning</b> keeps two tables to cancel over-estimation.</li>
+            </ul>
+            <h3>Reading the map</h3>
+            <p>The <b>heatmap</b> shows the best Q-value in each cell (brighter is better). The <b>arrows</b> show the greedy action. Switch between <i>Searching</i> and <i>Carrying</i> to see the two halves of the policy. The dashed white line is the <b>exact optimal route</b>, computed by a planner, so you can see how close the learned policy gets.</p>
+            <h3>Metrics</h3>
+            <p><b>Success</b> is the share of all start cells from which the greedy policy delivers within the step limit. <b>Efficiency</b> is optimal steps divided by actual steps, averaged over successful runs (100% means perfectly optimal).</p>
+            <p class="hint">Everything runs locally in your browser. No server, no data collected.</p>
+          </section>
+        </div>
+      </aside>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

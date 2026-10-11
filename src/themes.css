@@ -1,0 +1,240 @@
+/* Themes. Switch by setting data-theme on <html> (or ?theme=name in the URL).
+   A theme is only variables plus a few optional flourishes, so adding one never touches the code. */
+
+:root {
+  /* structure defaults */
+  --bw: 1px;
+  --bw-thin: 1px;
+  --radius: 0;
+  --radius-sm: 0;
+  --radius-pill: 0;
+  --card-shadow: none;
+  --btn-shadow: none;
+  --btn-shadow-active: none;
+  --stage-shadow: none;
+  --press: 1px;
+  --logo-filter: none;
+  --swatch-radius: 2px;
+  --h2-pad: 0;
+  --h2-rule: none;
+  --metric-size: 24px;
+  --metric-weight: 700;
+  --ui-case: none;
+  --ui-track: 0;
+  --heat-alpha: 0.62;
+}
+
+.theme-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--header-muted, var(--muted));
+  font-size: 12px;
+  margin-left: auto;
+  margin-right: 8px;
+}
+.theme-pick select {
+  width: auto;
+  padding: 5px 8px;
+}
+
+/* =====================================================================
+   INDUSTRIAL: warehouse operations console. Concrete, safety yellow, ink.
+   ===================================================================== */
+:root[data-theme='industrial'] {
+  --page-bg: #e4e1d8;
+  --header-bg: #1c1c1c;
+  --header-text: #f4f2ea;
+  --header-muted: #b9b5a8;
+  --card: #f4f2ea;
+  --card-2: #e9e6dc;
+  --line: rgba(0, 0, 0, 0.14);
+  --line-strong: #1c1c1c;
+  --grid: rgba(0, 0, 0, 0.12);
+  --text: #1c1c1c;
+  --muted: #5d5a52;
+  --accent: #f5c400;
+  --accent-hover: #ffd633;
+  --accent-2: #e8590c;
+  --on-accent: #1c1c1c;
+  --on-accent-2: #ffffff;
+  --good: #1b7f4c;
+  --bad: #c92a2a;
+  --focus: #0b5fff;
+  --btn-hover: #dcd8cb;
+
+  --font-head: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-ui: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-num: 'IBM Plex Mono', ui-monospace, monospace;
+  --ui-case: uppercase;
+  --ui-track: 0.06em;
+  --h1-weight: 800;
+  --h1-size: 28px;
+  --h1-case: uppercase;
+  --h1-track: 0.03em;
+  --h2-weight: 700;
+  --h2-size: 15px;
+  --h2-case: uppercase;
+  --h2-track: 0.08em;
+  --h2-color: #1c1c1c;
+  --h2-pad: 6px;
+  --h2-rule: 2px solid #1c1c1c;
+
+  --bw: 2px;
+  --bw-thin: 2px;
+  --card-shadow: 3px 3px 0 #1c1c1c;
+  --btn-shadow: 2px 2px 0 #1c1c1c;
+  --btn-shadow-active: 0 0 0 #1c1c1c;
+  --stage-shadow: 5px 5px 0 #1c1c1c;
+  --press: 2px;
+  --metric-size: 28px;
+
+  --stage-bg: #bdb9ad;
+  --floor-tint: rgba(0, 0, 0, 0);
+  --cell-line: rgba(0, 0, 0, 0.28);
+  --heat-0: #ece7d2;
+  --heat-1: #f5c400;
+  --heat-2: #e8590c;
+  --heat-alpha: 0.7;
+  --arrow: #1c1c1c;
+  --arrow-shadow: rgba(255, 255, 255, 0.85);
+  --path: #1c1c1c;
+  --trail: #0b5fff;
+  --start: #0b5fff;
+  --hover: #1c1c1c;
+  --series: #1c1c1c;
+  --algo-q: #0b5fff;
+  --algo-sarsa: #e8590c;
+  --algo-expected: #1b7f4c;
+  --algo-double: #7048e8;
+}
+:root[data-theme='industrial'] .top {
+  border-bottom: 8px solid transparent;
+  border-image: repeating-linear-gradient(135deg, #f5c400 0 14px, #1c1c1c 14px 28px) 8;
+}
+:root[data-theme='industrial'] .logo {
+  background: #f5c400;
+  border: 2px solid #f4f2ea;
+  padding: 3px;
+}
+:root[data-theme='industrial'] .tabs {
+  background: #f4f2ea;
+}
+:root[data-theme='industrial'] .theme-pick select {
+  background: #f4f2ea;
+}
+
+/* =====================================================================
+   PAPER: lab notebook / journal. Cream stock, ink, one vermilion accent.
+   ===================================================================== */
+:root[data-theme='paper'] {
+  --page-bg: #f4efe3;
+  --header-bg: transparent;
+  --card: #faf6ec;
+  --card-2: #efe8d6;
+  --line: rgba(31, 26, 20, 0.16);
+  --line-strong: rgba(31, 26, 20, 0.55);
+  --grid: rgba(31, 26, 20, 0.1);
+  --text: #1f1a14;
+  --muted: #6b6154;
+  --accent: #c8321a;
+  --accent-hover: #d94a32;
+  --accent-2: #b8860b;
+  --on-accent: #ffffff;
+  --on-accent-2: #ffffff;
+  --good: #1f7a6d;
+  --bad: #b3261e;
+  --focus: #c8321a;
+  --btn-hover: #e6dcc3;
+
+  --font-head: 'Fraunces', Georgia, serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-num: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-metric: 'Fraunces', Georgia, serif;
+  --h1-weight: 600;
+  --h1-size: 30px;
+  --h1-case: none;
+  --h1-track: -0.01em;
+  --h2-weight: 700;
+  --h2-size: 11px;
+  --h2-case: uppercase;
+  --h2-track: 0.14em;
+  --h2-color: #6b6154;
+  --h2-pad: 6px;
+  --h2-rule: 1px solid rgba(31, 26, 20, 0.35);
+  --radius: 2px;
+  --radius-sm: 2px;
+  --radius-pill: 2px;
+  --metric-size: 30px;
+  --metric-weight: 600;
+  --ui-case: none;
+  --stage-shadow: 0 1px 0 rgba(31, 26, 20, 0.2), 0 12px 24px -16px rgba(60, 40, 10, 0.4);
+
+  --stage-bg: #e7dfcc;
+  --floor-tint: rgba(244, 239, 227, 0.22);
+  --cell-line: rgba(31, 26, 20, 0.3);
+  --heat-0: #f3e6c4;
+  --heat-1: #e0a64a;
+  --heat-2: #c8321a;
+  --heat-alpha: 0.58;
+  --arrow: #1f1a14;
+  --arrow-shadow: rgba(255, 250, 240, 0.9);
+  --path: #1f1a14;
+  --trail: #1f7a6d;
+  --start: #c8321a;
+  --hover: #1f1a14;
+  --series: #1f4e8c;
+  --algo-q: #1f4e8c;
+  --algo-sarsa: #c8321a;
+  --algo-expected: #1f7a6d;
+  --algo-double: #b8860b;
+}
+:root[data-theme='paper'] .card {
+  border: 0;
+  border-top: 3px solid #1f1a14;
+  background: transparent;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+:root[data-theme='paper'] .metric {
+  border: 0;
+  border-top: 1px solid rgba(31, 26, 20, 0.5);
+  background: transparent;
+  padding-left: 2px;
+}
+:root[data-theme='paper'] .top {
+  border-bottom: 3px double rgba(31, 26, 20, 0.7);
+}
+:root[data-theme='paper'] .tabs {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(31, 26, 20, 0.4);
+  padding: 0;
+  gap: 18px;
+  border-radius: 0;
+}
+:root[data-theme='paper'] .tab {
+  padding: 8px 2px;
+  border-radius: 0;
+  font-weight: 500;
+}
+:root[data-theme='paper'] .tab.active {
+  background: transparent;
+  color: #1f1a14;
+  box-shadow: inset 0 -3px 0 #c8321a;
+}
+:root[data-theme='paper'] .chip.on {
+  background: #1f1a14;
+  color: #faf6ec;
+}
+:root[data-theme='paper'] .logo {
+  filter: sepia(0.35) saturate(0.9);
+}
+
+@media (max-width: 820px) {
+  .theme-pick span {
+    display: none;
+  }
+}
